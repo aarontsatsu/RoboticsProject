@@ -27,7 +27,7 @@ def get_dist(rectange_params,image):
     return image
 
 #Extract Frames 
-cap = cv2.VideoCapture('http://192.168.106.220:4747/video?start=0')
+cap = cv2.VideoCapture('http://172.16.4.242:4747/video?start=0')
 
 
 #basic constants for opencv Functs
@@ -43,20 +43,37 @@ cv2.namedWindow('Object Dist Measure ',cv2.WINDOW_NORMAL)
 cv2.resizeWindow('Object Dist Measure ', 700,600)
 
 
+def generate_color_range(base_color, tolerance=20):
+    base_color_np = np.array(base_color)
+    tolerance_np = np.array([tolerance, tolerance, tolerance])
+
+    lower_bound = np.maximum(0, base_color_np - tolerance_np)
+    upper_bound = np.minimum(255, base_color_np + tolerance_np)
+
+    return lower_bound, upper_bound
+
+def get_mask(lower_arr, upper_arr):
+        lower = np.array(lower_arr)
+        upper  = np.array(upper_arr)
+
+        mask = cv2.inRange(hsv_img, lower, upper)
+        return mask
+
 #loop to capture video frames
 while True:
     ret, img = cap.read()
 
     hsv_img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
-
-    #predefined mask for green colour detection
-    lower = np.array([37, 51, 24])
-    upper = np.array([83, 104, 131])
-    mask = cv2.inRange(hsv_img, lower, upper)
+    color_hsv = [30, 255, 255]
+    lower_arr, upper_arr = generate_color_range(color_hsv)
+    # #predefined mask for green colour detection
+    # lower = np.array([37, 51, 24])
+    # upper = np.array([83, 104, 131])
+    # mask = cv2.inRange(hsv_img, lower, upper)
      
-
-
+    # Define the lower and upper bounds for black color in HSV
+    mask = get_mask(lower_arr, upper_arr)
     #Remove Extra garbage from image
     d_img = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel,iterations = 5)
 
