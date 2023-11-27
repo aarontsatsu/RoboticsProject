@@ -27,7 +27,7 @@ def get_dist(rectange_params,image):
     return image
 
 #Extract Frames 
-cap = cv2.VideoCapture('http://172.16.4.242:4747/video?start=0')
+cap = cv2.VideoCapture('http://172.16.1.88:4747/video?start=0')
 
 
 #basic constants for opencv Functs
@@ -65,7 +65,7 @@ while True:
 
     hsv_img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
-    color_hsv = [30, 255, 255]
+    color_hsv = [83, 104, 131]
     lower_arr, upper_arr = generate_color_range(color_hsv)
     # #predefined mask for green colour detection
     # lower = np.array([37, 51, 24])
