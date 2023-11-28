@@ -35,8 +35,8 @@ def getDominantColor(image, roi):
     # Convert BGR to HSV
     dominant_color_hsv = cv2.cvtColor(np.uint8([[dominant_color_bgr]]), cv2.COLOR_BGR2HSV)[0][0]
 
-    print(f"Dominant Color (BGR) for Object {i + 1}: {dominant_color_bgr}")
-    print(f"Dominant Color (HSV) for Object {i + 1}: {hsv_value}") 
+    # print(f"Dominant Color (BGR) for Object {i + 1}: {dominant_color_bgr}")
+    # print(f"Dominant Color (HSV) for Object {i + 1}: {hsv_value}") 
     return dominant_color_hsv
 
 
@@ -57,7 +57,7 @@ def capture_obj_color():
 
     net = cv2.dnn.readNetFromCaffe(prototxt_path, model_path)
 
-    cap = cv2.VideoCapture('http://172.16.4.142:4747/video?start=0')
+    cap = cv2.VideoCapture('http://172.16.6.186:4747/video?start=0')
 
     is_taken = False
     dominant_color_bgr = None

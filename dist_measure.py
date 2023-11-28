@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import objectDetection as od
 
 
 #Define object specific variables  
@@ -64,7 +65,7 @@ while True:
 
     hsv_img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
-    color_hsv =  [9, 60, 60]
+    color_hsv =  od.capture_obj_color()
     lower_arr, upper_arr = generate_color_range(color_hsv)
     
     # #predefined mask for green colour detection
