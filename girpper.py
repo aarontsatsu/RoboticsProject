@@ -19,5 +19,5 @@ def open_gripper():
 
 
 if __name__ == "__main__":
-    close_gripper()
-    #open_gripper()
+    #close_gripper()
+    open_gripper()
