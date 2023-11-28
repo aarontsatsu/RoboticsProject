@@ -66,6 +66,7 @@ while True:
     hsv_img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
     color_hsv = [83, 104, 131]
+    
     lower_arr, upper_arr = generate_color_range(color_hsv)
     # #predefined mask for green colour detection
     # lower = np.array([37, 51, 24])
