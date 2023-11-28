@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import objectDetection as od
 
 
 #Define object specific variables  
@@ -27,7 +28,7 @@ def get_dist(rectange_params,image):
     return image
 
 #Extract Frames 
-cap = cv2.VideoCapture('http://172.16.4.142:4747/video?start=0')
+cap = cv2.VideoCapture('http://172.16.6.186:4747/video?start=0')
 
 
 #basic constants for opencv Functs
@@ -64,7 +65,9 @@ while True:
 
     hsv_img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
-    color_hsv =  [9, 60, 60]
+    # color_hsv =  od.capture_obj_color()
+    color_hsv = [8, 13, 76]
+    # color_hsv = [color_hsv.join(',')]
     lower_arr, upper_arr = generate_color_range(color_hsv)
     
     # #predefined mask for green colour detection
