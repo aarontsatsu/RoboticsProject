@@ -4,7 +4,7 @@ import time
 import socket
 
 # Set up client socket
-server_ip = '172.20.10.3'
+server_ip = '172.20.10.4'
 server_port = 27700
 
 try:
@@ -13,7 +13,7 @@ try:
 
  
 # Send data to the server
-    data_to_send = "200, 150"
+    data_to_send = "200, 30"
     client_socket.send(data_to_send.encode('utf-8'))
 
     # Receive a response from the server (optional)
