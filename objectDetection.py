@@ -111,3 +111,7 @@ def capture_obj_color():
     
     cv2.destroyAllWindows()
     cap.release()
+
+dom_color = capture_obj_color()
+print(dom_color)
+# print(dom_color[2])
