@@ -19,88 +19,95 @@ def extract_dominant_color(image, bounding_box):
 
     return dominant_color
 
-# prototxt, and model paths
-prototxt_path = 'models\MobileNetSSD_deploy.prototxt'
-model_path = 'models\MobileNetSSD_deploy.caffemodel'
+# image and tuple for  roi
+def getDominantColor(image, roi):
+    # Extract the dominant color in BGR
+    dominant_color_bgr = extract_dominant_color(image, roi)
 
-min_confidence = 0.8 # play around with this and observe your results 
+    # Replace this with your BGR value
+    bgr_value = np.array([dominant_color_bgr], dtype=np.uint8)
 
-classes = ["background", "aeroplane", "bicycle", "bird", "boat",
-              "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
-              "dog", "horse", "motorbike", "person", "pottedplant", "sheep",
-              "sofa", "train", "tvmonitor"]
+    # Reshape to a 2D array
+    bgr_value_2d = bgr_value.reshape(1, 1, 3)
 
-np.random.seed(543210)
-colors = np.random.uniform(0, 255, size=(len(classes), 3))
+    # Convert BGR to HSV
+    hsv_value = cv2.cvtColor(bgr_value_2d, cv2.COLOR_BGR2HSV)[0][0]
+    # Convert BGR to HSV
+    dominant_color_hsv = cv2.cvtColor(np.uint8([[dominant_color_bgr]]), cv2.COLOR_BGR2HSV)[0][0]
 
-net = cv2.dnn.readNetFromCaffe(prototxt_path, model_path)
+    print(f"Dominant Color (BGR) for Object {i + 1}: {dominant_color_bgr}")
+    print(f"Dominant Color (HSV) for Object {i + 1}: {hsv_value}") 
+    return dominant_color_hsv
 
-cap = cv2.VideoCapture('http://172.16.4.142:4747/video?start=0')
 
-while True:
-    ret,image = cap.read()
+def capture_obj_color():
+    # prototxt, and model paths
+    prototxt_path = 'models\MobileNetSSD_deploy.prototxt'
+    model_path = 'models\MobileNetSSD_deploy.caffemodel'
 
-    height, width = image.shape[0], image.shape[1]
-    # resize image 
-    blob = cv2.dnn.blobFromImage(cv2.resize(image, (300, 300)), 0.007843, (300, 300), 127.5)
+    min_confidence = 0.8 
 
-    net.setInput(blob)
-    detected_objects = net.forward()
+    classes = ["background", "aeroplane", "bicycle", "bird", "boat",
+                "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
+                "dog", "horse", "motorbike", "person", "pottedplant", "sheep",
+                "sofa", "train", "tvmonitor"]
+
+    np.random.seed(543210)
+    colors = np.random.uniform(0, 255, size=(len(classes), 3))
+
+    net = cv2.dnn.readNetFromCaffe(prototxt_path, model_path)
+
+    cap = cv2.VideoCapture('http://172.16.4.142:4747/video?start=0')
+
     is_taken = False
+    dominant_color_bgr = None
 
-    for i in range(detected_objects.shape[2]):
-        confidence = detected_objects[0, 0, i, 2]
-        if confidence > min_confidence:
-           
+    while not is_taken:
+        ret,image = cap.read()
 
-            class_index = int(detected_objects[0, 0, i, 1])
-            upper_left_x = int(detected_objects[0, 0, i, 3] * width)
-            lower_right_x = int(detected_objects[0, 0, i, 5] * width)
-            low_right_y = int(detected_objects[0, 0, i, 6] * height)
-            upper_left_y = int(detected_objects[0, 0, i, 4] * height)
-            
-            if classes[class_index] == "bottle" and not is_taken:
-                # Get the bounding box coordinates
-                box = detected_objects[0, 0, i, 3:7] * np.array([width, height, width, height])
-                (startX, startY, endX, endY) = box.astype("int")
+        height, width = image.shape[0], image.shape[1]
+        # resize image 
+        blob = cv2.dnn.blobFromImage(cv2.resize(image, (300, 300)), 0.007843, (300, 300), 127.5)
 
-                # Extract the object from the image
-                object_image = image[startY:endY, startX:endX]
+        net.setInput(blob)
+        detected_objects = net.forward()
+        # is_taken = False
 
-                # Save the object image
-                cv2.imwrite(f"object_{i + 1}.jpg", object_image)
+        for i in range(detected_objects.shape[2]):
+            confidence = detected_objects[0, 0, i, 2]
+            if confidence > min_confidence:
+                class_index = int(detected_objects[0, 0, i, 1])
+                upper_left_x = int(detected_objects[0, 0, i, 3] * width)
+                lower_right_x = int(detected_objects[0, 0, i, 5] * width)
+                low_right_y = int(detected_objects[0, 0, i, 6] * height)
+                upper_left_y = int(detected_objects[0, 0, i, 4] * height)
                 
-                # Extract the dominant color in BGR
-                dominant_color_bgr = extract_dominant_color(image, (startX, startY, endX, endY))
-
-
-                # Replace this with your BGR value
-                bgr_value = np.array([dominant_color_bgr], dtype=np.uint8)
-
-                # Reshape to a 2D array
-                bgr_value_2d = bgr_value.reshape(1, 1, 3)
-
-                # Convert BGR to HSV
-                hsv_value = cv2.cvtColor(bgr_value_2d, cv2.COLOR_BGR2HSV)[0][0]
-                # Convert BGR to HSV
-                dominant_color_hsv = cv2.cvtColor(np.uint8([[dominant_color_bgr]]), cv2.COLOR_BGR2HSV)[0][0]
-
-                print(f"Dominant Color (BGR) for Object {i + 1}: {dominant_color_bgr}")
-                print(f"Dominant Color (HSV) for Object {i + 1}: {hsv_value}") #returm the hsv value
-
-                is_taken = True
-
-
-
-            prediction_text = f'{classes[class_index]}: {confidence}'
-            cv2.rectangle(image, (upper_left_x, upper_left_y), (lower_right_x, low_right_y), colors[class_index], 3)
-            cv2.putText(image, prediction_text, (upper_left_x, 
+                prediction_text = f'{classes[class_index]}: {confidence}'
+                cv2.rectangle(image, (upper_left_x, upper_left_y), (lower_right_x, low_right_y), colors[class_index], 3)
+                cv2.putText(image, prediction_text, (upper_left_x, 
                         upper_left_y-15 if upper_left_y > 30 else upper_left_y+15), 
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, colors[class_index], 2)
-            
-    cv2.imshow('image', image)
-    cv2.waitKey(5)
+                
+                if classes[class_index] == "bottle" and not is_taken:
+                    # Get the bounding box coordinates
+                    box = detected_objects[0, 0, i, 3:7] * np.array([width, height, width, height])
+                    (startX, startY, endX, endY) = box.astype("int")
+
+                    # Extract the object from the image
+                    object_image = image[startY:endY, startX:endX]
+
+                    # Save the object image
+                    cv2.imwrite(f"object_{i + 1}.jpg", object_image)
+
+                    dominant_color_bgr = getDominantColor(image, (startX, startY, endX, endY))
+
+                    is_taken = True
+                    return dominant_color_bgr
+
+                
+        cv2.imshow('image', image)
+        cv2.waitKey(5)
     
     
-cv2.destroyAllWindows()
-cap.release()
+    cv2.destroyAllWindows()
+    cap.release()
