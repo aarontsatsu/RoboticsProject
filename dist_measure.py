@@ -1,6 +1,5 @@
 import numpy as np
-import cv2, time
-import objectDetection as od
+import cv2
 
 
 #Define object specific variables  
