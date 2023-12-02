@@ -61,7 +61,7 @@ def capture_obj_color():
 
     net = cv2.dnn.readNetFromCaffe(prototxt_path, model_path)
 
-    cap = cv2.VideoCapture('http://172.16.6.186:4747/video?start=0')
+    cap = cv2.VideoCapture('http://172.20.10.7:4747/video?start=0')
 
     is_taken = False
     dominant_color_bgr = None

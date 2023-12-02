@@ -4,7 +4,8 @@ import socket
 import threading
 from ev3dev2.motor import MoveTank, OUTPUT_C, OUTPUT_B
 
-bind_ip = "172.20.10.3" 
+
+bind_ip = "192.168.137.146" 
 bind_port = 27700 
 # create and bind a new socket
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -46,6 +47,7 @@ def clientHandler(client_socket):
     print("Received \"" + request.decode() + "\" from client")
     decoded_data = request.decode('utf-8').strip().split(',')
 
+   
     if len(decoded_data) == 2:
         speed, direction = int(decoded_data[0]), int(decoded_data[1])
         driveStraight(speed, direction)
