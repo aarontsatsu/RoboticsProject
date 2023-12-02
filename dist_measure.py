@@ -1,5 +1,5 @@
 import numpy as np
-import cv2
+import cv2, time
 import objectDetection as od
 
 
@@ -10,19 +10,29 @@ pixels = 30
 width = 7.6
 
 
-#find the distance from then camera
+#find the distance from the camera
 def get_dist(rectange_params,image):
-    #find no of pixels covered
-    pixels = rectange_params[1][0]
-    print(pixels)
-    #calculate distance
-    dist = (width*focal)/pixels
+    distances = []
+    start_time = time.time()
+
+    while time.time() - start_time < 10:  # Run for 10 seconds
+        # Find no. of pixels covered
+        pixels = rectange_params[1][0]
+
+        # Calculate distance
+        dist = (width * focal) / pixels
+        distances.append(dist)
+
+        time.sleep(0.1)
+
+    # Calculate the average distance
+    avg_distance = sum(distances) / len(distances)
     
-    #Wrtie n the image
+    #Write on the image
     image = cv2.putText(image, 'Distance from Camera in CM :', org, font,  
        1, color, 2, cv2.LINE_AA)
 
-    image = cv2.putText(image, str(dist), (110,50), font,  
+    image = cv2.putText(image, str(round(avg_distance,2)), (110,50), font,  
        fontScale, color, 1, cv2.LINE_AA)
 
     return image
@@ -31,7 +41,7 @@ def get_dist(rectange_params,image):
 cap = cv2.VideoCapture('http://172.20.10.7:4747/video?start=0')
 
 
-#basic constants for opencv Functs
+#basic constants for opencv functs
 kernel = np.ones((3,3),'uint8')
 font = cv2.FONT_HERSHEY_SIMPLEX 
 org = (0,20)  
