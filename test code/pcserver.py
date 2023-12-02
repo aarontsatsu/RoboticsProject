@@ -51,7 +51,6 @@ def clientHandler(client_socket):
     if len(decoded_data) == 2:
         speed, direction = int(decoded_data[0]), int(decoded_data[1])
         driveStraight(speed, direction)
-        gp.close_gripper()
     # close the connection again
     client_socket.close()
     print("Connection closed")
