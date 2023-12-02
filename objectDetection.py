@@ -1,6 +1,10 @@
 import numpy as np
 import cv2
 
+FOCAL = 300
+PIXELS = 30
+WIDTH = 7.6
+
 def extract_dominant_color(image, bounding_box):
     # Extract the region of interest (ROI) based on the bounding box
     (startX, startY, endX, endY) = bounding_box
