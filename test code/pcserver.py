@@ -3,8 +3,9 @@
 import socket
 import threading
 from ev3dev2.motor import MoveTank, OUTPUT_C, OUTPUT_B
-from girpper import open_gripper, close_gripper
-bind_ip = "172.20.10.4" 
+
+
+bind_ip = "192.168.137.146" 
 bind_port = 27700 
 # create and bind a new socket
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -50,7 +51,7 @@ def clientHandler(client_socket):
     if len(decoded_data) == 2:
         speed, direction = int(decoded_data[0]), int(decoded_data[1])
         driveStraight(speed, direction)
-        close_gripper()
+        gp.close_gripper()
     # close the connection again
     client_socket.close()
     print("Connection closed")

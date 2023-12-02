@@ -4,7 +4,7 @@ import time
 import socket
 
 # Set up client socket
-server_ip = '172.20.10.4'
+server_ip = '192.168.137.146'
 server_port = 27700
 
 try:
