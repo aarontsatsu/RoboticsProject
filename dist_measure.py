@@ -15,7 +15,7 @@ def get_dist(rectange_params,image):
     distances = []
     start_time = time.time()
 
-    while time.time() - start_time < 10:  # Run for 10 seconds
+    while time.time() - start_time < 5:  # Run for 10 seconds
         # Find no. of pixels covered
         pixels = rectange_params[1][0]
 
@@ -26,13 +26,16 @@ def get_dist(rectange_params,image):
         time.sleep(0.1)
 
     # Calculate the average distance
-    avg_distance = sum(distances) / len(distances)
+    # avg_distance = sum(distances) / len(distances)
+
+    #median of the distances
+    median_distance = sorted(distances)[len(distances) // 2]
     
     #Write on the image
     image = cv2.putText(image, 'Distance from Camera in CM :', org, font,  
        1, color, 2, cv2.LINE_AA)
 
-    image = cv2.putText(image, str(round(avg_distance,2)), (110,50), font,  
+    image = cv2.putText(image, str(round(median_distance,2)), (110,50), font,  
        fontScale, color, 1, cv2.LINE_AA)
 
     return image
