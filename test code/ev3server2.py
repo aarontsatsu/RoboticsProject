@@ -22,11 +22,19 @@ def clientHandler(client_socket):
   
     # send a message to the client
     client_socket.send("ready".encode())
+    # start spinning
+    spin(spin,10,15,"left")
+
     # receive and display a message from the client
     request = client_socket.recv(1024)
+    if request:
+        # stop spinning
+        stop_motors()
     print("Received \"" + request.decode() + "\" from client")
     decoded_data = request.decode('utf-8').strip().split(',')
     reciever_function(int(decoded_data[1]))
+
+
 
     
     client_socket.close()
