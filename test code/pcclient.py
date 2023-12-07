@@ -9,15 +9,18 @@ from .. import object_dist_finder as odf
 server_ip = '192.168.137.222'
 server_port = 27700
 is_running = True
-
+odf.color
 try:
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((server_ip, server_port))
 
     while is_running:
-        
-        distance = odf.object_dist_finder()
-        if not distance:
+        user_input_str = input("Enter true or false: ")
+        user_input_bool = bool(user_input_str.lower() == 'true')
+        is_taken = user_input_bool
+
+
+        if not is_taken:
             data ='spin,10,15,left'
             data_to_send = data
             client_socket.send(data_to_send.encode('utf-8'))
@@ -27,10 +30,10 @@ try:
             print(f"Server response: {response.decode('utf-8')}")
 
 
-        if distance:
+        else:
             data = input("enter command: ")
-            # if data == "q":
-            #     is_running = False
+            if data == "q":
+                is_running = False
             
             data_to_send = data
             client_socket.send(data_to_send.encode('utf-8'))
