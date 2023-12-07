@@ -7,17 +7,11 @@ from time import sleep
 gripper_motor = MediumMotor(OUTPUT_A)
 
 def close_gripper():
-    gripper_motor.on_for_seconds(speed=-50, seconds=6) 
+    gripper_motor.on_for_seconds(speed=-50, seconds=2) 
     if gripper_motor.is_stalled: 
         gripper_motor.stop()
     gripper_motor.stop()
 
 def open_gripper():
-    gripper_motor.on_for_seconds(speed=50, seconds=3)  
+    gripper_motor.on_for_seconds(speed=50, seconds=2)  
     gripper_motor.stop()
-
-
-
-if __name__ == "__main__":
-    #close_gripper()
-    open_gripper()
