@@ -6,7 +6,7 @@ from time import sleep
 from gripper import open_gripper, close_gripper
 from ev3movement import driveStraight, stop_motors, spin
 
-bind_ip = "192.168.137.146"
+bind_ip = "192.168.137.222"
 bind_port = 27700
 # create and bind a new socket
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
