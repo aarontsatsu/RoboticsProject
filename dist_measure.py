@@ -1,5 +1,5 @@
 import numpy as np
-import cv2
+import cv2, time
 import time
 
 
@@ -22,8 +22,9 @@ def get_dist(rectange_params,image):
     distances = []
     start_time = time.time()
 
- 
-    pixels = rectange_params[1][0]
+    while time.time() - start_time < 10:  # Run for 10 seconds
+        # Find no. of pixels covered
+        pixels = rectange_params[1][0]
 
     # Calculate distance
     dist = (WIDTH * FOCAL) / pixels
@@ -32,14 +33,14 @@ def get_dist(rectange_params,image):
         # time.sleep(0.1)
 
     # Calculate the average distance
-    # avg_distance = sum(distances) / len(distances)
+    avg_distance = sum(distances) / len(distances)
     
     #Write on the image
     image = cv2.putText(image, 'Distance from Camera in CM :', ORG, FONT,  
        1, COLOR, 2, cv2.LINE_AA)
 
-    image = cv2.putText(image, str(round(dist,2)), (110,50), FONT,  
-       FONTSCALE, COLOR, 1, cv2.LINE_AA)
+    image = cv2.putText(image, str(round(avg_distance,2)), (110,50), font,  
+       fontScale, color, 1, cv2.LINE_AA)
 
     return image
 
