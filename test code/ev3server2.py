@@ -5,7 +5,7 @@ import threading
 from time import sleep
 from gripper import open_gripper, close_gripper
 from ev3movement import driveStraight, stop_motors, spin
-from ev3script import reciever_function
+# from ev3script import reciever_function
 
 bind_ip = "192.168.137.222"
 bind_port = 27700
@@ -23,7 +23,7 @@ def clientHandler(client_socket):
     # send a message to the client
     client_socket.send("ready".encode())
     # start spinning
-    spin(spin,10,15,"left")
+    spin(10,15,"left")
 
     # receive and display a message from the client
     request = client_socket.recv(1024)
@@ -32,18 +32,11 @@ def clientHandler(client_socket):
         stop_motors()
     print("Received \"" + request.decode() + "\" from client")
     decoded_data = request.decode('utf-8').strip().split(',')
-    reciever_function(int(decoded_data[1]))
-
-
-
-    
+    #reciever_function(int(decoded_data[1]))
     client_socket.close()
     print("Connection closed")
 
 
-# Start the command executor thread
-executor_thread = threading.Thread(target=clientHandler)
-executor_thread.start()
 
 while server_running:
     
@@ -52,7 +45,6 @@ while server_running:
         # wait for client to connect
         client, addr = server.accept()
         
-
         print("Client connected " + str(addr))
         # create and start a thread to handle the client
         client_handler = threading.Thread(target=clientHandler, args=(client,))
@@ -71,9 +63,6 @@ while server_running:
 
 # Wait for the client handler thread to finish
 client_handler.join()
-
-# Wait for the command executor thread to finish
-executor_thread.join()
 
 # Close the server socket
 server.close()
