@@ -33,16 +33,18 @@ def get_dist(rectange_params,image):
         # time.sleep(0.1)
 
     # Calculate the average distance
-    avg_distance = sum(distances) / len(distances)
+    # avg_distance = sum(distances) / len(distances)
     
     #Write on the image
     image = cv2.putText(image, 'Distance from Camera in CM :', ORG, FONT,  
        1, COLOR, 2, cv2.LINE_AA)
 
-    image = cv2.putText(image, str(round(avg_distance,2)), (110,50), font,  
-       fontScale, color, 1, cv2.LINE_AA)
+    # image = cv2.putText(image, str(round(avg_distance,2)), (110,50), FONT,  
+    #    FONTSCALE, COLOR, 1, cv2.LINE_AA)
+    image = cv2.putText(image, str(dist), (110,50), FONT,  
+       FONTSCALE, COLOR, 1, cv2.LINE_AA)
 
-    return image
+    return image, dist
 
 
 def generate_color_range(base_color, tolerance=20):
@@ -91,9 +93,11 @@ def capture_obj_dist(cap, window_name, hsv):
                 box = np.intp(box)
                 cv2.drawContours(img,[box], -1,(255,0,0),3)
                 
-                img = get_dist(rect,img)
+                img, dist = get_dist(rect,img)
+                return dist
 
         cv2.imshow(window_name,img)
+        
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
