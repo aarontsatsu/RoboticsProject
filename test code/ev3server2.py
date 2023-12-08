@@ -23,7 +23,7 @@ def clientHandler(client_socket):
     # send a message to the client
     client_socket.send("ready".encode())
     # start spinning
-    spin(spin,10,15,"left")
+    spin(10,15,"left")
 
     # receive and display a message from the client
     request = client_socket.recv(1024)
@@ -41,9 +41,6 @@ def clientHandler(client_socket):
     print("Connection closed")
 
 
-# Start the command executor thread
-executor_thread = threading.Thread(target=clientHandler)
-executor_thread.start()
 
 while server_running:
     
@@ -52,7 +49,6 @@ while server_running:
         # wait for client to connect
         client, addr = server.accept()
         
-
         print("Client connected " + str(addr))
         # create and start a thread to handle the client
         client_handler = threading.Thread(target=clientHandler, args=(client,))
@@ -71,9 +67,6 @@ while server_running:
 
 # Wait for the client handler thread to finish
 client_handler.join()
-
-# Wait for the command executor thread to finish
-executor_thread.join()
 
 # Close the server socket
 server.close()
