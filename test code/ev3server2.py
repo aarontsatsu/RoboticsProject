@@ -16,23 +16,29 @@ server.listen(5)
 print("Server is listening on %s:%d" % (bind_ip, bind_port))
 
 server_running = True
+distance_found = False
+is_connected = True
+
 
 
 def clientHandler(client_socket):
-  
-    # send a message to the client
+    global distance_found, is_connected
     client_socket.send("ready".encode())
-    # start spinning
-    spin(10,15,"left")
+    while is_connected:
+        # send a message to the client
+        
+        # receive and display a message from the client
+        request = client_socket.recv(1024)
+        print("Received \"" + request.decode() + "\" from client")
+        decoded_data = request.decode('utf-8').strip().split(',')
 
-    # receive and display a message from the client
-    request = client_socket.recv(1024)
-    if request:
-        # stop spinning
-        stop_motors()
-    print("Received \"" + request.decode() + "\" from client")
-    decoded_data = request.decode('utf-8').strip().split(',')
-    #reciever_function(int(decoded_data[1]))
+        if decoded_data[0] == 'spin':
+            spin(int(decoded_data[1]),int(decoded_data[2]), decoded_data[3])
+            client_socket.send("false".encode())
+        elif decoded_data[0] == 'dist':
+            stop_motors()
+            client_socket.send("true".encode())
+        #reciever_function(int(decoded_data[1]))
     client_socket.close()
     print("Connection closed")
 
@@ -40,17 +46,16 @@ def clientHandler(client_socket):
 
 while server_running:
     
-
     try:
         # wait for client to connect
         client, addr = server.accept()
-        
         print("Client connected " + str(addr))
         # create and start a thread to handle the client
+        # spin
+        
         client_handler = threading.Thread(target=clientHandler, args=(client,))
         client_handler.start()
         
-
 
     except KeyboardInterrupt:
         # Handle KeyboardInterrupt (Ctrl+C) to gracefully stop the server

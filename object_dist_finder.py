@@ -10,6 +10,12 @@ def object_dist_finder():
     dist = dm.capture_obj_dist(cap, window_name, color)
     dist = round(dist, 2)
 
+    key = cv2.waitKey(1) & 0xFF
+    if key == 27:  
+        cap.release()
+        cv2.destroyAllWindows()
+        exit()  
+
     cap.release()
     cv2.destroyAllWindows()
 
@@ -18,10 +24,16 @@ def object_dist_finder():
 def collection_point_dist():
     window_name = 'Collection Point Dist Measure'
 
-    cap = cv2.VideoCapture('http://172.16.0.245:4747/video?start=0')
+    cap = cv2.VideoCapture(0)
     color = [0, 100, 100]
     dist = dm.capture_obj_dist(cap, window_name, color)
     dist = round(dist, 2)
+
+    key = cv2.waitKey(1) & 0xFF
+    if key == 27: 
+        cap.release()
+        cv2.destroyAllWindows()
+        exit()  
 
     cap.release()
     cv2.destroyAllWindows()
