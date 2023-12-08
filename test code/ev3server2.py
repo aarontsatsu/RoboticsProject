@@ -5,7 +5,7 @@ import threading
 from time import sleep
 from gripper import open_gripper, close_gripper
 from ev3movement import driveStraight, stop_motors, spin
-# from ev3script import reciever_function
+from config_script import receiver_function
 
 bind_ip = "192.168.137.222"
 bind_port = 27700
@@ -26,7 +26,6 @@ def clientHandler(client_socket):
     client_socket.send("ready".encode())
     while is_connected:
         # send a message to the client
-        
         # receive and display a message from the client
         request = client_socket.recv(1024)
         print("Received \"" + request.decode() + "\" from client")
@@ -38,7 +37,7 @@ def clientHandler(client_socket):
         elif decoded_data[0] == 'dist':
             stop_motors()
             client_socket.send("true".encode())
-        #reciever_function(int(decoded_data[1]))
+        #receiver_function(int(decoded_data[1]))
     client_socket.close()
     print("Connection closed")
 

@@ -3,10 +3,10 @@
 import socket
 import threading
 from time import sleep
-from gripper import open_gripper, close_gripper
+# from gripper import open_gripper, close_gripper
 from ev3movement import driveStraight, stop_motors, spin
 
-bind_ip = "192.168.137.222"
+bind_ip = "192.168.137.252"
 bind_port = 27700
 # create and bind a new socket
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -29,10 +29,10 @@ def execute_command():
         with command_lock:
             if current_command == 'stop':
                 stop_motors()
-            elif 'open' in current_command:
-                open_gripper()
-            elif 'close' in current_command:
-                close_gripper()
+            # elif 'open' in current_command:
+            #     open_gripper()
+            # elif 'close' in current_command:
+            #     close_gripper()
             elif 'drive' in current_command:
                 _, speed, direction = current_command.split(',')
                 driveStraight(int(speed), int(direction))
