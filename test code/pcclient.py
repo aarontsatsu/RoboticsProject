@@ -3,13 +3,13 @@
 import time
 import socket
 import threading
-from .. import object_dist_finder as odf
+# from .. import object_dist_finder as odf
 
 # Set up client socket
-server_ip = '192.168.137.222'
+server_ip = '192.168.137.252'
 server_port = 27700
 is_running = True
-odf.color
+# odf.color
 try:
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((server_ip, server_port))
