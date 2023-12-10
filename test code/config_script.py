@@ -15,6 +15,7 @@ def receiver_function(distance: int) -> bool:
         
         pd(5)
         open_gripper()
+        driveStraight(30, 2)
         time.sleep(2)
         close_gripper()
         
@@ -22,7 +23,7 @@ def receiver_function(distance: int) -> bool:
         return True
     except Exception as e:
         # Handle any exceptions that might occur during the movement
-        print(f"Error during movement: {e}")
+        # print(f"Error during movement: {e}")
         return False
     
 if __name__ == "__main__":
