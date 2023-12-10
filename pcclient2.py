@@ -28,7 +28,7 @@ def get_object_distance():
             distance = odf.object_dist_finder()
             print('object distance', distance)
             object_distance_queue.put(distance)
-        time.sleep(0.5)  
+        time.sleep(0.1)  
 
 def get_collection_distance():
     global process_camera_feed
@@ -38,7 +38,7 @@ def get_collection_distance():
             distance = odf.collection_point_dist()
             print('collection distance', distance)
             collection_distance_queue.put(distance)
-        time.sleep(0.5)  
+        time.sleep(0.1)  
 
 # Start threads for reading distances
 object_distance_thread = threading.Thread(target=get_object_distance)
@@ -55,7 +55,7 @@ try:
 
         try:
             # Retrieve the last known object distance from the thread
-            object_distance = object_distance_queue.get(timeout=1)  # Adjust timeout as needed
+            object_distance = object_distance_queue.get(timeout=0.1)  
         except queue.Empty:
             object_distance = None
 
@@ -87,7 +87,7 @@ try:
                 dist_found = False
                 try:
             # Retrieve the last known collection distance from the thread
-                    collection_distance = collection_distance_queue.get(timeout=1)  # Adjust timeout as needed
+                    collection_distance = collection_distance_queue.get(timeout=0.1)  
                 except queue.Empty:
                     collection_distance = None
                
