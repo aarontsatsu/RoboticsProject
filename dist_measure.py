@@ -22,9 +22,9 @@ def get_dist(rectange_params,image):
     distances = []
     start_time = time.time()
 
-    while time.time() - start_time < 10:  # Run for 10 seconds
+    #while time.time() - start_time < 0.1:  # Run for 10 seconds
         # Find no. of pixels covered
-        pixels = rectange_params[1][0]
+    pixels = rectange_params[1][0]
 
     # Calculate distance
     dist = (WIDTH * FOCAL) / pixels
@@ -92,7 +92,7 @@ def capture_obj_dist(cap, window_name, hsv):
                 box = cv2.boxPoints(rect) 
                 box = np.intp(box)
                 cv2.drawContours(img,[box], -1,(255,0,0),3)
-                
+                cv2.imwrite("collection point.jpg", img) 
                 img, dist = get_dist(rect,img)
                 return dist
 

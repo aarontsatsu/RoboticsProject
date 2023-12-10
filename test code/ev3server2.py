@@ -34,10 +34,27 @@ def clientHandler(client_socket):
         if decoded_data[0] == 'spin':
             spin(int(decoded_data[1]),int(decoded_data[2]), decoded_data[3])
             client_socket.send("false".encode())
+            
         elif decoded_data[0] == 'dist':
             stop_motors()
-            client_socket.send("true".encode())
-        #receiver_function(int(decoded_data[1]))
+            status = receiver_function('obj', float(decoded_data[1]))
+            print("proccessing ...")
+            print(status)
+            client_socket.send(str(status).encode())
+            print('reached here')
+
+
+        elif  decoded_data[0]:
+            stop_motors()
+            status = receiver_function('coll',float(decoded_data[1]))
+            print("proccessing ...")
+            print(status)
+            client_socket.send(str(status).encode())
+            print('reached here')
+        # else:
+        #     client_socket.close()
+        #     print("Connection closed")
+        #     is_connected = False
     client_socket.close()
     print("Connection closed")
 
@@ -49,6 +66,7 @@ while server_running:
         # wait for client to connect
         client, addr = server.accept()
         print("Client connected " + str(addr))
+        is_connected = True
         # create and start a thread to handle the client
         # spin
         
