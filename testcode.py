@@ -1,164 +1,52 @@
-import time
-import socket
-import threading
-import queue
-import object_dist_finder as odf
+import numpy as np
+import cv2
 
-# Set up client socket
-server_ip = '192.168.137.222'
-server_port = 27700
-is_running = True
-dist_found = False
-first_run = False
-obj_picked = None
+cap = cv2.VideoCapture('http://192.168.137.143:4747/video?start=0')
 
-timeout_seconds = 180
-start_time = time.time()
+def empty(a):
+    pass
 
-# Shared queues for distance information
-# object_distance_queue = queue.Queue()
-object_distance_queue = queue.Queue()
-collection_distance_queue = queue.Queue()
+def resize_final_img(x, y, *argv):
+    images = cv2.resize(argv[0], (x, y))
+    for i in argv[1:]:
+        resize = cv2.resize(i, (x, y))
+        images = np.concatenate((images, resize), axis=1)
+    return images
 
+cv2.namedWindow("HSV")
+cv2.resizeWindow("HSV", 300, 300)
+cv2.createTrackbar("HUE Min", "HSV", 0, 179, empty)
+cv2.createTrackbar("HUE Max", "HSV", 179, 179, empty)
+cv2.createTrackbar("SAT Min", "HSV", 0, 255, empty)
+cv2.createTrackbar("SAT Max", "HSV", 255, 255, empty)
+cv2.createTrackbar("VALUE Min", "HSV", 0, 255, empty)
+cv2.createTrackbar("VALUE Max", "HSV", 255, 255, empty)
 
-obj_picked_lock = threading.Lock()
-obj_picked = False
+cv2.namedWindow('F', cv2.WINDOW_NORMAL)
+cv2.resizeWindow('F', 700, 600)
 
-# Flag to control camera feed processing
-process_camera_feed = True
+while True:
+    ret, img = cap.read()
+    h_min = cv2.getTrackbarPos("HUE Min", "HSV")
+    h_max = cv2.getTrackbarPos("HUE Max", "HSV")
+    s_min = cv2.getTrackbarPos("SAT Min", "HSV")
+    s_max = cv2.getTrackbarPos("SAT Max", "HSV")
+    v_min = cv2.getTrackbarPos("VALUE Min", "HSV")
+    v_max = cv2.getTrackbarPos("VALUE Max", "HSV")
 
-def get_object_distance():
-    global process_camera_feed, is_running, shared_distance
+    hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-    while is_running :
-        if process_camera_feed:
-            distance = odf.object_dist_finder()
-            print('object distance', distance)
-            object_distance_queue.put(distance)
+    lower = np.array([h_min, s_min, v_min])
+    upper = np.array([h_max, s_max, v_max])
+    mask = cv2.inRange(hsv_img, lower, upper)
+    kernel = np.ones((3, 3), 'uint8')
 
-            # Check if the desired condition for ending the thread is met
-            if distance is not None:
-                break
+    d_img = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=5)
 
-        process_camera_feed = False
+    final_img = resize_final_img(300, 300, mask, d_img)
+    cv2.imshow('F', final_img)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
-
-def get_collection_distance():
-    global process_camera_feed, is_running
-
-    while is_running :
-        if process_camera_feed:
-            distance = odf.collection_point_dist()
-            print('collection distance', distance)
-            collection_distance_queue.put(distance)
-
-            # Check if the desired condition for ending the thread is met
-            if distance is not None:
-                break
-
-        process_camera_feed = False
-
-object_distance_thread = threading.Thread(target=get_object_distance)
-object_distance_thread.start()
-
-collection_distance_thread = threading.Thread(target=get_collection_distance)
-
-
-try:
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((server_ip, server_port))
-
-    while is_running and time.time() - start_time < timeout_seconds:
-
-        try:
-            # Retrieve the last known object distance from the thread
-            object_distance = object_distance_queue.get(timeout=0.1)
-        except queue.Empty:
-            object_distance = None
-
-        if object_distance is None and dist_found is False:
-            # Send the spin message for object distance
-            data = 'spin,10,15,left'
-            data_to_send = data
-            client_socket.send(data_to_send.encode('utf-8'))
-
-            # Receive a response from the server (optional)
-            response = client_socket.recv(1024)
-            print(f"Server response spin: {response.decode('utf-8')}")
-
-        if object_distance is not None and first_run is False:
-            # Send the object distance to the server
-            data_to_send = f'dist,{object_distance} '
-            client_socket.send(data_to_send.encode('utf-8'))
-
-            # check if object was picked
-            try:
-                # Add a confirmation step
-                confirmation = client_socket.recv(1024)
-                print(f"Server confirmation: {confirmation.decode('utf-8')}")
-
-                # Wait for the actual response
-                response = client_socket.recv(1024)
-                print(f"Server response: {response.decode('utf-8')}")  
-                
-                with obj_picked_lock:
-                    obj_picked = bool(response.decode('utf-8').lower() == 'true')
-                        
-                dist_found = True
-                first_run = True
-                
-            except socket.timeout:
-                print("Timeout occurred while waiting for the server response.")
-            except Exception as e:
-                print(f"Error during recv: {e}")
-            
-            print("object picked:", obj_picked)
-            if obj_picked:
-                dist_found = False
-
-                # Remove the following line from here
-                if object_distance_thread.is_running():
-                    print("killing object distance thread..")
-                    object_distance_thread.join()
-                    collection_distance_thread.start()
-
-                    try:
-                        # Retrieve the last known collection distance from the thread
-                        collection_distance = collection_distance_queue.get(timeout=0.1)
-                    except queue.Empty:
-                        collection_distance = None
-
-                    if collection_distance is None and dist_found is False:
-                        # Send the spin message for collection distance
-                        data = 'spin,10,15,left'
-                        data_to_send = data
-                        client_socket.send(data_to_send.encode('utf-8'))
-
-                        # Receive a response from the server (optional)
-                        response = client_socket.recv(1024)
-                        print(f"Server response: {response.decode('utf-8')}")
-
-                    elif collection_distance is not None:
-                        dist_found = True
-                        # Send the collection distance to the server
-                        data_to_send = f'coll,{collection_distance} '
-                        client_socket.send(data_to_send.encode('utf-8'))
-
-                        # check if object was picked
-                        response = client_socket.recv(1024)
-                        print(f"Server response: {response.decode('utf-8')}")
-
-                        sent_to_collection = bool(response.lower() == 'true')
-
-                        if sent_to_collection:
-                            print("job nots finished time to look again.....")
-                            start_time = time.time()
-
-    client_socket.close()
-
-except Exception as e:
-    print(f"Error during connection: {e}")
-
-
-# Join the thread when the desired condition is met
-
+cap.release()
+cv2.destroyAllWindows()

@@ -6,7 +6,7 @@ import object_dist_finder as odf
 
 
 # Set up client socket
-server_ip = '192.168.137.222'
+server_ip = '192.168.137.28'
 server_port = 27700
 is_running = True
 dist_found = False
@@ -64,25 +64,22 @@ def get_collection_distance():
 
 
 # Create the thread
-
+object_distance_thread = threading.Thread(target=get_object_distance)
+collection_distance_thread = threading.Thread(target=get_collection_distance)
 
 try:
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((server_ip, server_port))
-   
+    object_distance_thread.start()
 
 except Exception as e:
     print(f"Error during connection: {e}")
 
 while is_running and time.time() - start_time < timeout_seconds:
-    
-    object_distance_thread = threading.Thread(target=get_object_distance)
-    object_distance_thread.start()
+
     try:
         # Retrieve the last known object distance from the thread
-        object_distance = object_distance_queue.get(timeout=0.1)
-        print("obj queue", object_distance)
-        
+        object_distance = object_distance_queue.get(timeout=0.1)        
     except queue.Empty:
         object_distance = None
     
@@ -123,10 +120,11 @@ while is_running and time.time() - start_time < timeout_seconds:
             print(f"Error during recv: {e}")
 
     
+    
     dist_found = False
-    print("object picked:", obj_picked)
     if obj_picked:
-        collection_distance_thread = threading.Thread(target=get_collection_distance)
+        
+
         # print("any distance found", dist_found)
         collection_distance_thread.start()
         collection_distance = None

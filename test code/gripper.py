@@ -15,3 +15,4 @@ def close_gripper():
 def open_gripper():
     gripper_motor.on_for_seconds(speed=50, seconds=2)  
     gripper_motor.stop()
+

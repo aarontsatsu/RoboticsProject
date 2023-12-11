@@ -7,13 +7,15 @@ from robot_controls import pid_control as pd
 SPEED = 70
 
 def receiver_function(type:str, distance: float) -> bool:
+    if distance >= 80:
+        distance = 80
     if type == "obj":
         try:
             #stop the robot and switch to ultrasound if the you cover 80% of distance
             stop_distance = 0.8 * distance
+            spin(150,30,'left')
             driveStraight(SPEED, stop_distance)
             stop_motors()
-
             pd(5)
             open_gripper()
             driveStraight(20, 6)
@@ -28,9 +30,9 @@ def receiver_function(type:str, distance: float) -> bool:
         try:
             #stop the robot and switch to ultrasound if the you cover 80% of distance
             stop_distance = 0.8 * distance
-            driveStraight(SPEED, stop_distance)
+            driveStraight(-SPEED, stop_distance)
             stop_motors()
-
+            spin(180,30,'left')
             pd(5)
             open_gripper()
             time.sleep(2)

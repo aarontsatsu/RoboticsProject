@@ -7,7 +7,7 @@ from gripper import open_gripper, close_gripper
 from ev3movement import driveStraight, stop_motors, spin
 from config_script import receiver_function
 
-bind_ip = "192.168.137.222"
+bind_ip = '192.168.137.28'
 bind_port = 27700
 # create and bind a new socket
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -51,10 +51,10 @@ def clientHandler(client_socket):
             print(status)
             client_socket.send(str(status).encode())
             print('reached here')
-        # else:
-        #     client_socket.close()
-        #     print("Connection closed")
-        #     is_connected = False
+        else:
+            client_socket.close()
+            print("Connection closed")
+            is_connected = False
     client_socket.close()
     print("Connection closed")
 
