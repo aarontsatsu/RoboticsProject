@@ -5,7 +5,7 @@ import dist_measure as dm
 def object_dist_finder():
     window_name = 'Object Dist Measure'
 
-    cap = cv2.VideoCapture('http://192.168.137.143:4747/video?start=0')
+    cap = cv2.VideoCapture('http://192.168.137.198:4747/video?start=0')
     #cap = cv2.VideoCapture(0)
 
     color = od.capture_obj_color(cap, window_name)
@@ -26,7 +26,7 @@ def object_dist_finder():
 def collection_point_dist():
     window_name = 'Collection Point Dist Measure'
 
-    cap = cv2.VideoCapture('http://192.168.137.143:4747/video?start=0')
+    cap = cv2.VideoCapture('http://192.168.137.198:4747/video?start=0')
     #cap = cv2.VideoCapture(0)
     if cap.read()[0] == False:
         print("Not open")
@@ -47,5 +47,5 @@ def collection_point_dist():
 
     return dist 
     
-
+# print("obj", object_dist_finder())
 # print("dist", collection_point_dist())

@@ -59,6 +59,7 @@ def capture_obj_color(cap, window_name):
     np.random.seed(543210)
     colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
+    # start model
     net = cv2.dnn.readNetFromCaffe(prototxt_path, model_path)
 
     is_taken = False
@@ -78,6 +79,7 @@ def capture_obj_color(cap, window_name):
             confidence = detected_objects[0, 0, i, 2]
             if confidence > MIN_CONFIDENCE:
                 class_index = int(detected_objects[0, 0, i, 1])
+                # create bounding box
                 upper_left_x = int(detected_objects[0, 0, i, 3] * width)
                 lower_right_x = int(detected_objects[0, 0, i, 5] * width)
                 low_right_y = int(detected_objects[0, 0, i, 6] * height)
